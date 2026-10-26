@@ -1,16 +1,6 @@
 // The app states the unit tests start from, one typed builder each: sensible defaults (a set-up app with nothing
 // to do: ffmpeg found, nothing missing, TensorRT off, the queue empty) plus the overrides a test is about.
-import {
-  DEFAULT_APPEARANCE,
-  DEFAULT_OPTIONS,
-  type AppState,
-  type ClipInfo,
-  type FfmpegState,
-  type InstallState,
-  type Job,
-  type Settings,
-  type TrtState,
-} from "../../src/shared/types";
+import { DEFAULT_APPEARANCE, DEFAULT_OPTIONS, type AppState, type ClipInfo, type FfmpegState, type InstallState, type Job, type Settings, type TrtState } from "../../src/shared/types";
 import { DEFAULT_TRT_SIZES } from "../../src/shared/trt";
 
 /** A readable 640×360 video clip of 24 frames, /c/<id>.mp4. */

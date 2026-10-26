@@ -7,6 +7,9 @@
   "main": "out/main/index.js",
   "desktopName": "corridorkey-desktop.desktop",
   "scripts": {
+    "dev:ui": "vite --port 1420 --strictPort",
+    "build:ui": "vite build",
+    "tauri": "tauri",
     "dev": "electron-vite dev -- --no-sandbox",
     "build": "electron-vite build",
     "start": "electron-vite preview -- --no-sandbox",
@@ -25,6 +28,7 @@
     "check:engine": "cd engine-rs && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test"
   },
   "dependencies": {
+    "@tauri-apps/api": "2.12.4",
     "lucide-react": "0.577.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -32,6 +36,7 @@
     "remark-gfm": "4.0.1"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "2.12.4",
     "@types/node": "22.20.5",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",

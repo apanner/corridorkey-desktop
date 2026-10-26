@@ -7,3 +7,4 @@ __pycache__/
 .claude/
 release/
 engine-rs/target/
+src-tauri/target/
