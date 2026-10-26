@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "The CorridorKey window",
   "windows": ["main"],
-  "permissions": ["core:default", "allow-shell-info"]
+  "permissions": ["core:default"]
 }
