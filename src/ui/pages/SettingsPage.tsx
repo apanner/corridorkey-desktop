@@ -1,10 +1,10 @@
 // App settings: this PC's choices, saved as you change them (no save bar).
 // Main view: what they add up to (readouts). Panel: Appearance, Results,
-// Updates, Storage (what the app keeps on disk, each folder removable). Every
+// Storage (what the app keeps on disk, each folder removable). Every
 // control changes something you can see (rule 4).
 import { useEffect } from "react";
-import { Download, FolderInput, FolderOpen, FolderOutput, HardDrive, MemoryStick, Palette, RefreshCw, RotateCcw, Trash2 } from "lucide-react";
-import type { Appearance, AppState, CacheInfo, UpdateState } from "../../shared/types";
+import { FolderInput, FolderOpen, FolderOutput, HardDrive, MemoryStick, Palette, RotateCcw, Trash2 } from "lucide-react";
+import type { Appearance, AppState, CacheInfo } from "../../shared/types";
 import { gibBytes, mbOrGbBytes } from "../../shared/units";
 import { VramLimitRow } from "../JobSettings";
 import { NOT_WHILE_BUSY } from "../../shared/texts";
@@ -34,7 +34,6 @@ export function SettingsPage(props: { state: AppState; panelShown: boolean; narr
         ? "Your KDE color scheme"
         : "Your desktop's accent color"
       : "The desktop's colors couldn't be read; the built-in theme is used";
-  const u = state.update;
   // Storage is measured when this page opens (walking the folders), and again after a removal
   useEffect(() => void window.ck.measureStorage(), []);
   const storage = state.storage;
@@ -136,9 +135,6 @@ export function SettingsPage(props: { state: AppState; panelShown: boolean; narr
         </Section>
       )}
 
-      <Section id="updates" icon={Download} title="Updates" status={updateStatus(u)}>
-        {() => <Updates u={u} queueRunning={state.queueRunning} />}
-      </Section>
       <Section id="storage" icon={HardDrive} title="Storage" status={storageTotal === null ? "measuring…" : `${gbBytes(storageTotal)} on this PC`}>
         {() =>
           !storage ? (
@@ -191,79 +187,6 @@ export function SettingsPage(props: { state: AppState; panelShown: boolean; narr
 export function versionText(v: string): string {
   const m = /^(\d+\.\d+\.\d+)-dev\.(\d+)$/.exec(v);
   return m ? `${m[1]} Dev ${m[2]}` : v;
-}
-
-function updateStatus(u: UpdateState): string {
-  switch (u.status) {
-    case "unsupported":
-      return "Not available in this copy";
-    case "checking":
-      return "Checking…";
-    case "current":
-      return `Up to date · ${versionText(u.current)}`;
-    case "available":
-      return `${versionText(u.latest ?? "")} is available`;
-    case "downloading":
-      return `Downloading ${Math.round((u.progress ?? 0) * 100)}%`;
-    case "ready":
-      return `${versionText(u.latest ?? "")} ready · restart to use it`;
-    case "error":
-      return u.error ?? "Update check failed";
-    default:
-      return u.channel === "dev" ? "Development channel" : "Stable channel";
-  }
-}
-
-function Updates({ u, queueRunning }: { u: UpdateState; queueRunning: boolean }) {
-  if (u.status === "unsupported") {
-    return <p className="hint-text">{u.error ?? "Updates aren't available in this copy."}</p>;
-  }
-  return (
-    <>
-      <Row label="Channel" hint={u.channel === "dev" ? "New features first; may have rough edges" : undefined}>
-        <Segmented
-          label="Update channel"
-          value={u.channel}
-          options={[
-            ["stable", "Stable"],
-            ["dev", "Development"],
-          ]}
-          onChange={(c) => void window.ck.setUpdateChannel(c)}
-        />
-      </Row>
-      <Row label="Check automatically">
-        <label className="checks">
-          <input type="checkbox" checked={u.automatic} onChange={(e) => void window.ck.setAutoUpdate(e.target.checked)} />
-          At start and every few hours
-        </label>
-      </Row>
-      <Row label="Now">
-        <div className="file-pick">
-          <button type="button" className="btn small" disabled={u.status === "checking" || u.status === "downloading"} onClick={() => window.ck.checkForUpdates()}>
-            <RefreshCw size={14} /> Check now
-          </button>
-          {u.status === "available" && (
-            <button type="button" className="btn small primary" onClick={() => window.ck.installUpdate()}>
-              <Download size={14} /> Download {versionText(u.latest ?? "")}
-            </button>
-          )}
-          {u.status === "ready" && (
-            <button type="button" className="btn small primary" disabled={queueRunning} title={queueRunning ? "After the queue finishes" : undefined} onClick={() => window.ck.restartToUpdate()}>
-              <RotateCcw size={14} /> Restart now
-            </button>
-          )}
-        </div>
-      </Row>
-      {u.channel === "stable" && /-dev\.\d+$/.test(u.current) && (
-        <Row label="Back to stable" hint="Installs the newest stable release over this dev build">
-          <button type="button" className="btn small" disabled={u.status === "checking" || u.status === "downloading"} onClick={() => window.ck.backToStable()}>
-            <RotateCcw size={14} /> Back to stable
-          </button>
-        </Row>
-      )}
-      {u.notes && <p className="hint-text">{u.notes}</p>}
-    </>
-  );
 }
 
 /**

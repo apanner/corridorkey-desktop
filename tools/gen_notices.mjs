@@ -132,10 +132,10 @@ const WHEEL_LICENCES = [
 ];
 function downloads() {
   const src = readFileSync(join(APP, "electron/main/install.ts"), "utf8");
-  const repo = readFileSync(join(APP, "electron/main/updateFeed.ts"), "utf8").match(/export const REPO = "([^"]+)"/)?.[1];
+  const repo = src.match(/export const REPO = "([^"]+)"/)?.[1];
   const set = src.match(/const MODEL_SET = "([^"]+)"/)?.[1];
   const trtSet = src.match(/const TRT_MODEL_SET = "([^"]+)"/)?.[1];
-  if (!repo || !set || !trtSet) throw new Error("gen_notices: install.ts / updateFeed.ts no longer name the repository or the model sets");
+  if (!repo || !set || !trtSet) throw new Error("gen_notices: install.ts no longer names the repository or the model sets");
   // the catalog's parts in the file's order: Linux, Windows, macOS, then the opt-in TensorRT download
   const parts = [
     ["Linux", /export const RUNTIME = \{([\s\S]*?)\n\};/],

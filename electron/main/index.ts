@@ -14,7 +14,6 @@ import { checkCheckout, checkRustEngine, chooseEngine, loadSettings, saveSetting
 import { effectivePath, findEngineFiles, findTrtBuilder, isInsideApp, modelSetVersion, windowTitle } from "./engineFind";
 import { addToPathList, APP_DIR, appDirs, engineBinName, isMac, isWin, ortLibrary, PLATFORM } from "./platform";
 import { HOMEBREW_DIRS, checkFfmpeg, ffmpegState, installFfmpeg, planFor, readOsRelease, wingetFfmpegDirs } from "./ffmpeg";
-import { PROGRESS_EVERY_MS } from "./updateFlow";
 import {
   MODELS_BYTES,
   RUNTIME_BYTES,
@@ -35,7 +34,6 @@ import { folderBytes, pruneCache, removeStorage, storageItems, TRT_ENGINES_DIR }
 import { builtRanges, Prebuilder, rangesOnDisk, recordBuild, removeSize } from "./trtPrebuild";
 import { jobLogText, saveJobLog } from "./jobLog";
 import { readDesktopPalette, watchDesktopPalette } from "./desktopTheme";
-import { Updater } from "./updater";
 import { holdAppImageMountUntilExit } from "./appImageQuit";
 import {
   LOG_SHOWN,
@@ -174,6 +172,8 @@ let cacheError: string | null = null;
 // the card's memory from the engine's last estimate (the limit menus)
 let card: CardReading | null = null;
 let lastInstallProgress = 0;
+// Install progress is pushed at most four times a second, and always on a new step or the end.
+const PROGRESS_EVERY_MS = 250;
 async function recheckFfmpeg(): Promise<void> {
   // Windows: winget's ffmpeg folders onto this process's PATH (a running program never sees PATH changes)
   if (IS_WIN && process.env.LOCALAPPDATA) process.env.PATH = addToPathList(process.env.PATH, wingetFfmpegDirs(process.env.LOCALAPPDATA), "front");
@@ -205,7 +205,6 @@ let gpuError: string | null = null;
 let gpuTimer: NodeJS.Timeout | null = null;
 let desktopPalette: DesktopPalette | null = null;
 let stopPaletteWatch: (() => void) | null = null;
-const updater = new Updater({ changed: () => scheduleSend(), version: app.getVersion() });
 
 /** ck-media://f/<encoded path>: only files inside the media cache are served. */
 const mediaUrl = (file: string) => `${MEDIA_SCHEME}://f/${encodeURIComponent(file)}`;
@@ -332,7 +331,6 @@ function state(): AppState {
     cacheMissing,
     card,
     desktopPalette,
-    update: updater.state,
     system: { engineBin: engineBinName(), ortLib: ortLibrary().display, platform: PLATFORM, home: homedir() },
   };
 }
@@ -708,7 +706,7 @@ function registerIpc(): void {
     const deps: InstallDeps = {
       // loop: NOT-WORTH — the fetch the install is given; downloadVerified sets a connect timeout and a stall deadline [bounded: CONNECT_TIMEOUT_MS / STALL_TIMEOUT_MS]
       fetch: (url, init) => net.fetch(url, init),
-      // at most 4 updates a second (the updater's PROGRESS_EVERY_MS), and always a new step or the end
+      // at most 4 updates a second (PROGRESS_EVERY_MS), and always a new step or the end
       progress: (done, total, step) => {
         const t = Date.now();
         if (step === lastStep && done < total && t - lastInstallProgress < PROGRESS_EVERY_MS) return;
@@ -957,15 +955,6 @@ function registerIpc(): void {
     persist();
     scheduleSend();
   });
-  ipcMain.handle(IPC.checkForUpdates, () => updater.check(true));
-  ipcMain.handle(IPC.setUpdateChannel, (_e, c: unknown) => updater.setChannel(c === "dev" ? "dev" : "stable"));
-  ipcMain.handle(IPC.setAutoUpdate, (_e, on: unknown) => updater.setAutomatic(on === true));
-  ipcMain.handle(IPC.installUpdate, () => updater.download());
-  // Never restart into an update while the queue runs (it would kill a job).
-  ipcMain.handle(IPC.restartToUpdate, () => {
-    if (!queue.running) updater.restart();
-  });
-  ipcMain.handle(IPC.backToStable, () => updater.backToStable());
   ipcMain.on(IPC.setVisible, (_e, visible: unknown) => setShown(visible === true));
 }
 
@@ -1053,11 +1042,10 @@ app.whenReady().then(() => {
   updatePaletteWatch();
   registerIpc();
   createWindow();
-  updater.start();
 });
 
 // The quit waits for a running job's started files to be deleted (bug hunt 2026-10-26 Q1; async now, partial.ts), at
-// most this long: an output share that stopped answering can't hold the quit (under updater.ts's 10 s exit after an update).
+// most this long: an output share that stopped answering can't hold the quit.
 const QUIT_CLEANUP_MS = 8_000;
 let quitCleaned = false;
 app.on("before-quit", (e) => {
@@ -1068,7 +1056,6 @@ app.on("before-quit", (e) => {
   estimator.stop();
   prebuild.stop();
   stopPaletteWatch?.();
-  updater.stop();
   // loop: NOT-WORTH — one wait at quit [bounded: QUIT_CLEANUP_MS]
   void Promise.race([cleanup, new Promise((r) => setTimeout(r, QUIT_CLEANUP_MS))]).then(() => app.quit());
 });

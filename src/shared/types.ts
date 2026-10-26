@@ -332,22 +332,6 @@ export interface Settings {
 
 export type EngineKind = "rust" | "python";
 
-// The app's own updates (electron/main/updater). null feed = no release
-// channel set up yet (the repo has no releases): App settings says so.
-export type UpdateChannel = "stable" | "dev";
-export interface UpdateState {
-  feed: string | null;
-  channel: UpdateChannel;
-  automatic: boolean;
-  status: "idle" | "checking" | "current" | "available" | "downloading" | "ready" | "error" | "unsupported";
-  current: string;
-  latest: string | null;
-  notes: string | null;
-  progress: number | null;
-  error: string | null;
-  checkedAt: number | null;
-}
-
 // The Rust engine's files found on this computer (electron/main/engineFind.ts), newest first.
 export interface EngineFileChoice {
   path: string;
@@ -531,7 +515,6 @@ export interface AppState {
   enginePaths: Record<EngineFileKind, string | null>;
   // the desktop's colors (Desktop theme / desktop accent); null = couldn't be read or not asked
   desktopPalette: DesktopPalette | null;
-  update: UpdateState;
   // this system's file names, for the Engine page's hints (electron/main/platform.ts)
   // and the home folder, shown as ~ in shortened paths (src/ui/paths.ts)
   system: { engineBin: string; ortLib: string; platform: string; home: string };
@@ -586,11 +569,5 @@ export interface CorridorKeyApi {
   setAppearance(appearance: Appearance): Promise<void>;
   pickOutputRoot(): Promise<void>;
   clearOutputRoot(): Promise<void>;
-  checkForUpdates(): Promise<void>;
-  setUpdateChannel(channel: UpdateChannel): Promise<void>;
-  setAutoUpdate(on: boolean): Promise<void>;
-  installUpdate(): Promise<void>;
-  restartToUpdate(): Promise<void>;
-  backToStable(): Promise<void>;
   setVisible(visible: boolean): void;
 }

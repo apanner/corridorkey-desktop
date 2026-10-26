@@ -11,8 +11,7 @@
 // tiny helper that inherits the pipe waits for this process and every
 // process below it to end (at most MAX_WAIT_MS), then exits; the runtime
 // unmounts after the last of them.
-// Call holdAppImageMountUntilExit() once from will-quit; Updater.restart()
-// also calls it before it quits into the new version.
+// Call holdAppImageMountUntilExit() once from will-quit.
 import { PLATFORM } from "./platform";
 import { readdirSync, readFileSync } from "node:fs";
 import { spawn } from "node:child_process";

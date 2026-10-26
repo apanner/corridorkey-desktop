@@ -7,7 +7,6 @@
 // <data> is $XDG_DATA_HOME/corridorkey-desktop (~/.local/share/corridorkey-desktop): the in-app install
 // (BACKLOG row 2) puts its downloads there. Newest first. A setting of null means "Automatic": the first
 // one found.
-import { isAppImageMount } from "./relaunch";
 import { MODELS_DIR, ortLibrary, PLATFORM, RUNTIME_DIR } from "./platform";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -119,6 +118,11 @@ export const TRT_BUILDER = "ck-trt-build";
 export function findTrtBuilder(binary: string | null, distDir: string | null, exists: (p: string) => boolean = existsSync): string | null {
   // loop: NOT-WORTH — two candidates, two stats per engine start
   return [binary ? join(dirname(binary), TRT_BUILDER) : null, distDir ? join(distDir, TRT_BUILDER) : null].find((p): p is string => !!p && exists(p)) ?? null;
+}
+
+/** A path inside an AppImage's FUSE mount (the runtime names it .mount_<name><random>). It changes every launch. */
+function isAppImageMount(dir: string): boolean {
+  return /(^|\/)\.mount_[^/]+(\/|$)/.test(dir);
 }
 
 /** A path inside the running AppImage's mount (resources/…): it changes every launch, so it is never saved. */

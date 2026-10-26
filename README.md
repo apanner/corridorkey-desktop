@@ -83,8 +83,8 @@ instead of CUDA, and that path needs more development before it keys:
   keying is measured on a real Apple Silicon Mac (an M6 Mac mini, `tools/mac_gate.sh`): mattes within fp16 rounding of
   CUDA on the same clips, and the speed. macOS is in 1.0 only if that gate passes; otherwise 1.0 is Linux and Windows
   and the Mac follows in 1.1.
-- **No TensorRT** (NVIDIA only), video outputs are lossless H.264 (ProRes 4444 XQ comes with the Mac work), and the Mac
-  updates from the releases page by hand, not by itself (row 57).
+- **No TensorRT** (NVIDIA only), and video outputs are lossless H.264 (ProRes 4444 XQ comes with the Mac work).
+  New versions, on every system, are installed from the GitHub release.
 
 ## Install size
 
@@ -747,7 +747,7 @@ CorridorKey writes only these folders (plus the results you ask for, next to you
 
 | What | Linux | Windows | macOS |
 | --- | --- | --- | --- |
-| The app | the AppImage you downloaded (and, after updates, the previous version next to it) | the install folder (Apps & features) | `CorridorKey.app` in Applications |
+| The app | the AppImage you downloaded | the install folder (Apps & features) | `CorridorKey.app` in Applications |
 | GPU runtime and models (~5.7 GB; ~3.3 GB on macOS) | `~/.local/share/corridorkey-desktop` | `%LOCALAPPDATA%\corridorkey-desktop` | `~/Library/Application Support/corridorkey-desktop` |
 | Thumbnails, stills, job temp files | `~/.cache/corridorkey-desktop` | `%LOCALAPPDATA%\corridorkey-desktop\cache` | `~/Library/Caches/corridorkey-desktop` |
 | Settings (a few KB) | `~/.config/corridorkey-desktop` | `%APPDATA%\corridorkey-desktop` | `~/Library/Application Support/corridorkey-desktop` (with the data) |

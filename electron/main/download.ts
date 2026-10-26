@@ -5,8 +5,8 @@
 // the rest; without `resume` any failure deletes the file. Anything bigger than
 // declared is refused at once, and nothing is kept unless size and hash match. A server that doesn't answer, or a download that stops
 // sending data, fails instead of hanging. Free of Electron: the fetch is
-// passed in (the updater gives it Electron's net.fetch), so vitest runs it
-// against a local server (tests/unit/download.test.ts).
+// passed in (the install gives it Electron's net.fetch), so vitest runs it
+// against a local server (tests/unit/install.test.ts).
 import { createHash } from "node:crypto";
 import { createReadStream, createWriteStream, rmSync, statSync } from "node:fs";
 
@@ -24,7 +24,7 @@ export interface Expected {
   // one of the two, hex
   sha512?: string;
   sha256?: string;
-  // whose numbers these are, for the refusals: "the signed feed" (the updater) unless set
+  // whose numbers these are, for the refusals: "the app's list" unless set
   source?: string;
 }
 
@@ -53,7 +53,7 @@ export async function downloadVerified(
   stallMs: number = STALL_TIMEOUT_MS,
   opts: { resume?: boolean; connectMs?: number } = {},
 ): Promise<void> {
-  const source = want.source ?? "the signed feed";
+  const source = want.source ?? "the app's list";
   const refused = want.source ? "refused" : "update refused";
   const algorithm = want.sha256 ? "sha256" : "sha512";
   const expectHex = want.sha256 ?? want.sha512 ?? "";
@@ -89,7 +89,7 @@ export async function downloadVerified(
   const headers = have > 0 ? { Range: `bytes=${have}-` } : undefined;
   const response = await fetchFn(want.url, { signal: abort ? AbortSignal.any([abort, connect.signal]) : connect.signal, ...(headers ? { headers } : {}) })
     .catch((cause: unknown) => {
-      // error: PASSES-ON — rethrown in plain words to the updater / installer, which show it
+      // error: PASSES-ON — rethrown in plain words to the installer, which shows it
       throw connect.signal.aborted || (cause instanceof Error && cause.name === "TimeoutError") ? new Error(NO_ANSWER) : cause;
     })
     .finally(() => clearTimeout(connectTimer));

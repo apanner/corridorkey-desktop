@@ -10,12 +10,14 @@ import type { EngineKind } from "../../src/shared/types";
 import { gbBytes } from "../../src/shared/units";
 import { lowerFirst, INSTALL_FIRST } from "../../src/shared/texts";
 import { DOWNLOADS_DIR, LIBRARY_FILE, MODELS_DIR, PLATFORM, RUNTIME_DIR } from "./platform";
-import { REPO } from "./updateFeed";
 import { constants, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statfsSync, statSync, writeFileSync } from "node:fs";
 import { copyFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { downloadVerified, type FetchFn } from "./download";
 import { unzip } from "./unzip";
+
+// This repository. Model release URLs are built from it. tools/gen_notices.mjs reads the constant.
+export const REPO = "MarcelineVPQ/corridorkey-desktop";
 
 export interface Download {
   file: string;

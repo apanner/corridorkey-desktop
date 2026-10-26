@@ -23,5 +23,3 @@ export const CANT_READ_CLIP = "Can't read this clip";
 export const AS_USED = "As used for this run";
 /** Storage can't be removed while something uses it (the button's tooltip, the main process's refusal). */
 export const NOT_WHILE_BUSY = "Not while the queue or the download runs";
-/** A build without a release channel (App settings, Updates; and the check's refusal). */
-export const NO_RELEASE_CHANNEL = "No release channel is set up in this build";

@@ -25,7 +25,7 @@ extraResources:
 # electron/main/index.ts looks in app.asar.unpacked/engine when packaged.
 asarUnpack:
   - engine/**
-# The Linux updater (electron/main/updateFeed.ts) expects exactly this name.
+# Published file name: CorridorKey-Desktop-<version>.AppImage, -Setup.exe, or .dmg.
 artifactName: CorridorKey-Desktop-${version}.${ext}
 # CorridorKey's own icon, from corridorkey.com/favicon.svg (Corridor Digital's; Marcy 2026-10-24: it's their app).
 # build/icon.png = rsvg-convert -w 512 -h 512 build/icon.svg -o build/icon.png

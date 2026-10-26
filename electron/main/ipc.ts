@@ -32,10 +32,4 @@ export const IPC = {
   setAppearance: "ck:set-appearance",
   pickOutputRoot: "ck:pick-output-root",
   clearOutputRoot: "ck:clear-output-root",
-  checkForUpdates: "ck:check-for-updates",
-  setUpdateChannel: "ck:set-update-channel",
-  setAutoUpdate: "ck:set-auto-update",
-  installUpdate: "ck:install-update",
-  restartToUpdate: "ck:restart-to-update",
-  backToStable: "ck:back-to-stable",
 } as const;

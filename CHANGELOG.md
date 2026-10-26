@@ -13,7 +13,7 @@ screen keyer, on its own Rust + ONNX Runtime engine, for Linux, Windows and macO
 - **macOS is a preview and can't key yet.** The disk image is signed and notarized, installs and opens, but the Mac's
   Core ML engine needs more work: setup doesn't install the Core ML models yet (backlog row 59), the Core ML set is HD
   only (row 60), and it hasn't been proven on a real Apple Silicon Mac (row 24). README, "macOS, honestly", lists
-  what's left. No TensorRT on the Mac, and it updates from the releases page by hand.
+  what's left. No TensorRT on the Mac. New versions, on every system, are installed from the GitHub release.
 
 **What's in it:**
 
@@ -33,9 +33,9 @@ screen keyer, on its own Rust + ONNX Runtime engine, for Linux, Windows and macO
   install is less than half the original CorridorKey 2.0 setup (README, Install size).
 - The Engine page lists what it finds (Automatic = the newest) with Browse… for anything else, and
   checks ffmpeg: if it's missing, it offers to install it (apt, pacman) or says what to enable.
-- Updates: the AppImage updates itself from signed Stable / Development feeds (signature, size
-  and SHA-512 checked; installs beside the running copy, the previous version kept; never a
-  downgrade except Back to stable). Packaging as `CorridorKey-Desktop-<version>.AppImage`.
+- The app does not update itself. Install the next version from the GitHub release. Packaging as
+  `CorridorKey-Desktop-<version>.AppImage` (and the Windows installer). The Tauri updater is
+  `update_plan.md` phase 5.
 - CorridorKey's own icon (corridorkey.com).
 - Windows 10/11: an installer (per user, no administrator), the same setup (the Windows runtime
   packages, ffmpeg through winget) and an uninstaller that asks whether to remove the downloaded data.

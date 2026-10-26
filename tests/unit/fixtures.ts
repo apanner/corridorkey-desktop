@@ -10,7 +10,6 @@ import {
   type Job,
   type Settings,
   type TrtState,
-  type UpdateState,
 } from "../../src/shared/types";
 import { DEFAULT_TRT_SIZES } from "../../src/shared/trt";
 
@@ -123,19 +122,6 @@ export const settings = (over: Partial<Settings> = {}): Settings => ({
   ...over,
 });
 
-const updateState = (): UpdateState => ({
-  feed: null,
-  channel: "stable",
-  automatic: false,
-  status: "idle",
-  current: "0.1.0-dev.1",
-  latest: null,
-  notes: null,
-  progress: null,
-  error: null,
-  checkedAt: null,
-});
-
 /**
  * The whole app state: the PyTorch reference engine set up from /ck (the ONNX Runtime engine not, its first
  * problem being the engine program), the install and ffmpeg done, TensorRT off, no jobs, the engine stopped.
@@ -161,7 +147,6 @@ export const appState = (over: Partial<AppState> = {}): AppState => ({
   card: null,
   enginePaths: { binary: null, models: null, ort: null },
   desktopPalette: null,
-  update: updateState(),
   system: { engineBin: "corridorkey-engine", ortLib: "libonnxruntime.so", platform: "linux", home: "/home/user" },
   ...over,
 });
